@@ -14,6 +14,7 @@ gold <- ts(data$GOLD, start = c(1975,1),frequency = 12)
 
 ts.plot(gold)
 
+
 acf(gold, lag.max = 300)
 
 #B
@@ -119,6 +120,10 @@ adfTest(MA, type = "nc", lags=1)
 # Aikasarjalla on unitroot, jos lagi alle 16. p-value < 0,05.
 
 
+```
 
 
+
+```{r pressure, echo=FALSE}
+acf(gold, lag.max = 300)
 ```

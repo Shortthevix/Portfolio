@@ -2,3 +2,123 @@
 title: "AR, MA ja ARMA -mallit"
 ---
 
+
+```{r aaa, echo=FALSE}
+
+library(fUnitRoots)
+setwd("~/L&R/Aikasarja-Analyysi")
+
+data <- read.table("Gold.txt", header = TRUE)
+
+gold <- ts(data$GOLD, start = c(1975,1),frequency = 12)
+
+ts.plot(gold)
+
+acf(gold, lag.max = 300)
+
+#B
+
+adfTest(gold, type = "nc", lags =20)
+
+adfTest(gold, type = "nc", lags = 12)
+
+# "C", koska aikasarjassa ei ole aikatrendiä. 
+# P-value yli 0,05 -> aikasarjalle ei ole unit roottia
+# eli sarja on stokastinen.
+
+
+#C
+
+loggold<- diff(log(gold))
+
+ts.plot(loggold)
+
+acf(loggold, lag.max = 200)
+
+adfTest(loggold, type = "nc", lags = 20)
+
+adfTest(loggold, type = "nc", lags = 12)
+
+# Sarja ei ole deterministinen, koska, 
+# käyrän jyrkkyys vaihtelee paljon (random walk).
+# P-value alle 0,05 -> aikasarjalla unit root,
+# Sarja ei ole stokastinen
+
+
+# 4.2
+library("forecast")
+
+data2 <- read.table("Expect_Ger.txt", header = TRUE)
+
+ger <- ts(data2$EXPECT, start = c(1991,1), frequency = 12)
+
+ts.plot(ger)
+
+acger <- acf(ger, lag.max = 40)
+pacger <- pacf(ger, lag.max = 40)
+
+# ARMA(1,1) / ei AR(1)
+
+Binotto <- diff(log(ger))
+germean <- mean(Binotto)
+Räikkönen <- Binotto - germean
+
+ts.plot(Räikkönen)
+
+Vettelbic <- auto.arima(Räikkönen, d=0, max.p=7, max.q=7, max.order=7, seasonal=FALSE, trace=TRUE, 
+                     stationary=TRUE, stepwise=FALSE, approximation=FALSE,
+                     ic=c("bic"))
+# BIC, ARMA(1,1)
+
+
+Vettelaic <- auto.arima(Räikkönen, d=0, max.p=7, max.q=7, max.order=7, seasonal=FALSE, trace=TRUE, 
+                        stationary=TRUE, stepwise=FALSE, approximation=FALSE,
+                        ic=c("aic"))
+
+# AIC, ARMA(5,2)
+
+# 4.3
+
+data3 <- read.table("CPI_q_8218.txt", header = TRUE)
+jea <- ts(data3$CPI, start = c(1982,1), frequency = 4)
+
+difjea <- 400*diff(log(jea))
+
+ts.plot(difjea)
+
+acf(difjea, lag.max = 40)
+pacf(difjea, lag.max = 40)
+
+# ARMA (2,2)
+
+jeaaic <- auto.arima(difjea, d=0, max.p=7, max.q=7, max.order=7, seasonal=FALSE, trace=TRUE, 
+                        stationary=TRUE, stepwise=FALSE, approximation=FALSE,
+                        ic=c("aic"))
+# ARMA(3,3)
+
+
+jeabic <- auto.arima(difjea, d=0, max.p=7, max.q=7, max.order=7, seasonal=FALSE, trace=TRUE, 
+                     stationary=TRUE, stepwise=FALSE, approximation=FALSE,
+                     ic=c("bic"))
+
+# MA(0,1)
+# AR(3)
+
+# 4.4
+
+# C
+
+data4 <- read.table("MA1.txt", header = TRUE)
+
+MA <- ts(data4$MA.1., start = 0, frequency = 1)
+
+ts.plot(MA)
+
+adfTest(MA, type = "nc", lags=1)
+
+# Aikasarjalla on unitroot, jos lagi alle 16. p-value < 0,05.
+
+
+
+
+```
